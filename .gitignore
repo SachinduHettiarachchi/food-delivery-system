@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment files — NEVER commit these
+.env
+*.env
+!*.env.example
+
+# Build outputs
+/build
+/dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Testing
+/coverage
+
+# React build
+frontend/build/
+
+# Misc
+.eslintcache
+
+
+# Claude memory
+.claude/
