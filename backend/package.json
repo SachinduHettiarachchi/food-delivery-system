@@ -7,12 +7,30 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed:test": "node seeds/runSeed.js",
-    "test": "jest --runInBand --testTimeout=30000 --forceExit --verbose"
+    "test": "jest --runInBand --testTimeout=30000 --forceExit --verbose",
+    "test:unit": "jest tests/unit/ --testTimeout=10000 --forceExit --verbose",
+    "test:integration": "jest tests/integration/ --runInBand --testTimeout=30000 --forceExit --verbose",
+    "test:all": "jest --runInBand --testTimeout=30000 --forceExit --verbose"
   },
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
       "**/tests/**/*.test.js"
+    ],
+    "projects": [
+      {
+        "displayName": "unit",
+        "testMatch": ["<rootDir>/tests/unit/**/*.test.js"],
+        "testEnvironment": "node",
+        "setupFiles": ["<rootDir>/tests/envSetup.js"]
+      },
+      {
+        "displayName": "integration",
+        "testMatch": ["<rootDir>/tests/integration/**/*.test.js"],
+        "testEnvironment": "node",
+        "globalSetup": "<rootDir>/tests/setup.js",
+        "setupFiles": ["<rootDir>/tests/envSetup.js"]
+      }
     ]
   },
   "dependencies": {

@@ -5,7 +5,7 @@ class RestaurantRepository {
     return await Restaurant.findAll({
       where: { is_active: true },
       include: [{ model: User, as: "owner", attributes: ["id", "name", "email"] }],
-      order: [["created_at", "DESC"]],
+      order: [["id", "ASC"]],
     });
   }
 
