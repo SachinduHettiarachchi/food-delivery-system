@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Menu, X, LayoutDashboard, Package, Users, Store, User, LogOut, ChevronRight } from "lucide-react";
 import logo from "../../assets/logo.png";
@@ -9,7 +9,6 @@ import { useCart } from "../../context/CartContext";
 const Navbar = () => {
   const { user, logout, isCustomer, isRestaurantAdmin, isSystemAdmin } = useAuth();
   const { totalItems } = useCart();
-  const navigate = useNavigate();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -22,8 +21,7 @@ const Navbar = () => {
 
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
-  // Replace history entry so no stale `from` state carries over to the next login
-  const handleLogout = () => { logout(); navigate("/login", { replace: true, state: {} }); };
+  const handleLogout = () => { logout(true); };
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + "/");
 

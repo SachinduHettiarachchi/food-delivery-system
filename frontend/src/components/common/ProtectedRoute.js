@@ -3,7 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const ProtectedRoute = ({ children, roles }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, loggingOut } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -18,6 +18,11 @@ const ProtectedRoute = ({ children, roles }) => {
   }
 
   if (!user) {
+    // Manual logout: don't carry the current path as `from` so the next
+    // user who logs in isn't redirected to a different user's page.
+    if (loggingOut.current) {
+      return <Navigate to="/login" replace />;
+    }
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

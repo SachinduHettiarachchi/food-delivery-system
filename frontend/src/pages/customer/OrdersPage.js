@@ -208,6 +208,18 @@ export default function OrdersPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Poll every 20 s while there are active orders
+  useEffect(() => {
+    const hasActive = orders.some(o => ACTIVE_STATUSES.includes(o.status));
+    if (!hasActive) return;
+    const interval = setInterval(() => {
+      orderAPI.getMyOrders()
+        .then(r => setOrders(r.data.data))
+        .catch(() => {});
+    }, 20_000);
+    return () => clearInterval(interval);
+  }, [orders]);
+
   const handleCancelled = (orderId) => {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
   };

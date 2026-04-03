@@ -108,8 +108,11 @@ class OrderController {
       if (req.user.role === "system_admin") {
         orders = await OrderRepository.findAll();
       } else if (req.user.role === "restaurant_admin") {
-        // Restaurant admin — gets orders from their restaurants (handled in route)
-        orders = await OrderRepository.findAll();
+        // Scope to restaurants owned by this admin only
+        const restaurants = await RestaurantRepository.findByOwnerId(req.user.id);
+        const ids = restaurants.map(r => r.id);
+        const settled = await Promise.all(ids.map(id => OrderRepository.findByRestaurantId(id)));
+        orders = settled.flat();
       } else {
         orders = await OrderRepository.findByCustomerId(req.user.id);
       }

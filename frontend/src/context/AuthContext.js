@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { authAPI } from "../services/api";
 
 const AuthContext = createContext(null);
@@ -12,6 +12,9 @@ export const AuthProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(true);
+  // Tracks whether the current logout was triggered manually (vs. session expiry).
+  // Used by ProtectedRoute to avoid carrying a stale `from` path into the next login.
+  const loggingOut = useRef(false);
 
   // Verify token on mount
   useEffect(() => {
@@ -27,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = useCallback(async (email, password) => {
+    loggingOut.current = false;
     const res = await authAPI.login({ email, password });
     const { user, token } = res.data.data;
     // Clear sessionStorage first so no stale token from a prior non-remember session lingers
@@ -48,7 +52,8 @@ export const AuthProvider = ({ children }) => {
     return user;
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((manual = false) => {
+    if (manual) loggingOut.current = true;
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     sessionStorage.removeItem("token");
@@ -69,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   const isSystemAdmin = user?.role === "system_admin";
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isCustomer, isRestaurantAdmin, isSystemAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser, isCustomer, isRestaurantAdmin, isSystemAdmin, loggingOut }}>
       {children}
     </AuthContext.Provider>
   );
